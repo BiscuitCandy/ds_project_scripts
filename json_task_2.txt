@@ -1,0 +1,356 @@
+positives_q1 = [
+  {
+    "$match": {
+      "$and": [
+        {
+          "tables": {"$ne": []}
+        },
+        {
+          "$or": [
+            {"title": {"$regex": "covid", "$options": "i"}},
+            {"title": {"$regex": "corona", "$options": "i"}}
+          ]
+        },
+        {
+          "$or": [
+            {"tables.tableCaption": {"$regex": "kidney disease", "$options": "i"}},
+            {"tables.tableCaption": {"$regex": "renal disease", "$options": "i"}},
+            {"tables.tableCaption": {"$regex": "CKD"}}
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "$unwind": "$tables"
+  },
+  {
+    "$project":
+              {
+                  "title": 1,
+                "caption": "$tables.tableCaption",
+                "meta_h" : "$tables.HMD",
+                "meta_v": "$tables.VMD",
+                "data": "$tables.Data"
+              }
+  }
+]
+
+negatives_q1 = [
+  {
+    "$match": {
+      "$and": [
+        {"tables": {"$ne": []}},
+        {
+          "$and": [
+            {"title": {"$not": {"$regex": "covid", "$options": "i"}}},
+            {"title": {"$not": {"$regex": "corona", "$options": "i"}}}
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "$unwind": "$tables"
+  },
+  {
+    "$project": {
+      "title": 1,
+      "caption": "$tables.tableCaption",
+      "meta_h": "$tables.HMD",
+      "meta_v": "$tables.VMD",
+      "data": "$tables.Data"
+    }
+  }, {"$limit": 1017}
+]
+
+MLP [acc: 0.47; precision: 0.55; recall: 0.47]
+CNN [acc: 0.56; precision: 0.40; recall: 0.56]
+SVM [acc: 0.93] (9:1 split)
+log [acc: 0.89]
+MLP(with out embedding) [acc: 0.49, precision: 0.56, recall: 0.49]
+
+
+-----------------------------------------------------------
+-----------------------------------------------------------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-----------------------------------------------------------
+-----------------------------------------------------------
+
+positive_q2 = [
+  {
+    "$match": {
+      "$and": [
+        {
+          "$or": [
+            {"title": {"$regex": "kidney disease", "$options": "i"}},
+            {"title": {"$regex": "renal disease", "$options": "i"}},
+            {"title": {"$regex": "CKD"}},
+            {"abstract.text": {"$regex": "kidney disease", "$options": "i"}},
+            {"abstract.text": {"$regex": "renal disease", "$options": "i"}},
+            {"abstract.text": {"$regex": "CKD"}},
+            {"tables.tableCaption": {"$regex": "kidney disease", "$options": "i"}},
+            {"tables.tableCaption": {"$regex": "renal disease", "$options": "i"}},
+            {"tables.tableCaption": {"$regex": "CKD"}},
+            {"figures.figCaption": {"$regex": "kidney disease", "$options": "i"}},
+            {"figures.figCaption": {"$regex": "renal disease", "$options": "i"}},
+            {"figures.figCaption": {"$regex": "CKD"}}
+          ]
+        },
+        { "tables": { "$ne": [] } },
+        {
+          "$or": [
+            { "title": { "$regex": "covid", "$options": "i" } },
+            { "title": { "$regex": "corona", "$options": "i" } },
+            { "title": { "$regex": "SARS-CoV-2", "$options": "i" } },
+            { "abstract.text": { "$regex": "covid", "$options": "i" } },
+            { "abstract.text": { "$regex": "corona", "$options": "i" } },
+            { "abstract.text": { "$regex": "SARS-CoV-2", "$options": "i" } }
+          ]
+        }
+      ]
+    }
+  },
+  { "$unwind": "$tables" },
+  {
+    "$project":
+              {
+                  "title": 1,
+                "caption": "$tables.tableCaption",
+                "meta_h" : "$tables.HMD",
+                "meta_v": "$tables.VMD",
+                "data": "$tables.Data"
+              }
+  }
+]
+
+negatives_q2 = [
+  {
+    "$match": {
+      "$and": [
+        {
+          "$and": [
+            { "title": { "$not": { "$regex": "kidney disease", "$options": "i" } } },
+            { "title": { "$not": { "$regex": "renal disease", "$options": "i" } } },
+            { "title": { "$not": { "$regex": "CKD" } } },
+            { "abstract.text": { "$not": { "$regex": "kidney disease", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "renal disease", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "CKD" } } },
+            { "tables.tableCaption": { "$not": { "$regex": "kidney disease", "$options": "i" } } },
+            { "tables.tableCaption": { "$not": { "$regex": "renal disease", "$options": "i" } } },
+            { "tables.tableCaption": { "$not": { "$regex": "CKD" } } },
+            { "figures.figCaption": { "$not": { "$regex": "kidney disease", "$options": "i" } } },
+            { "figures.figCaption": { "$not": { "$regex": "renal disease", "$options": "i" } } },
+            { "figures.figCaption": { "$not": { "$regex": "CKD" } } }
+          ]
+        },
+        { "tables": { "$ne": [] } },
+        {
+          "$and": [
+            { "title": { "$not": { "$regex": "covid", "$options": "i" } } },
+            { "title": { "$not": { "$regex": "corona", "$options": "i" } } },
+            { "title": { "$not": { "$regex": "SARS-CoV-2", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "covid", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "corona", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "SARS-CoV-2", "$options": "i" } } }
+          ]
+        }
+      ]
+    }
+  },
+  { "$unwind": "$tables" },
+  {
+    "$project": {
+      "title": 1,
+      "caption": "$tables.tableCaption",
+      "meta_h": "$tables.HMD",
+      "meta_v": "$tables.VMD",
+      "data": "$tables.Data"
+    }
+  }, {"$limit": 20000}
+]
+
+MLP [acc: 0.53, precision: 0.59, recall: 0.54]
+CNN [acc: 0.57, precision: 0.50, recall: 0.57]
+SVM [acc: 0.81]
+log [acc: 0.67]
+MLP (without embedding) [acc: 0.38, precision: 0.45, recall: 0.38]
+
+
+-----------------------------------------------------------
+-----------------------------------------------------------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-----------------------------------------------------------
+-----------------------------------------------------------
+
+positives_q3 = [
+  {
+    "$match": {
+      "$and": [
+        {
+          "tables": { "$ne": [] }
+        },
+        {
+          "$or": [
+            {"title": {"$regex": "kidney disease", "$options": "i"}},
+            {"title": {"$regex": "renal disease", "$options": "i"}},
+            {"title": {"$regex": "CKD"}},
+            {"abstract.text": {"$regex": "kidney disease", "$options": "i"}},
+            {"abstract.text": {"$regex": "renal disease", "$options": "i"}},
+            {"abstract.text": {"$regex": "CKD"}},
+            {"tables.tableCaption": {"$regex": "kidney disease", "$options": "i"}},
+            {"tables.tableCaption": {"$regex": "renal disease", "$options": "i"}},
+            {"tables.tableCaption": {"$regex": "CKD"}},
+            {"figures.figCaption": {"$regex": "kidney disease", "$options": "i"}},
+            {"figures.figCaption": {"$regex": "renal disease", "$options": "i"}},
+            {"figures.figCaption": {"$regex": "CKD"}},
+            { "title": { "$regex": "kidney stones", "$options": "i" } },
+            { "title": { "$regex": "electrolyte imbalance", "$options": "i" } },
+            { "title": { "$regex": "edema", "$options": "i" } },
+            { "title": { "$regex": "pruritus", "$options": "i" } },
+            { "title": { "$regex": "urine", "$options": "i" } },
+            { "title": { "$regex": "dialysis", "$options": "i" } },
+            { "title": { "$regex": "anemia", "$options": "i" } },
+            { "title": { "$regex": "urina", "$options": "i" } },
+            { "abstract.text": { "$regex": "kidney stones", "$options": "i" } },
+            { "abstract.text": { "$regex": "electrolyte imbalance", "$options": "i" } },
+            { "abstract.text": { "$regex": "edema", "$options": "i" } },
+            { "abstract.text": { "$regex": "pruritus", "$options": "i" } },
+            { "abstract.text": { "$regex": "urine", "$options": "i" } },
+            { "abstract.text": { "$regex": "anemia", "$options": "i" } },
+            { "abstract.text": { "$regex": "abdominal pain", "$options": "i" } },
+            { "abstract.text": { "$regex": "abdominal discomfort", "$options": "i" } },
+            { "abstract.text": { "$regex": "dialysis", "$options": "i" } },
+            { "abstract.text": { "$regex": "urina", "$options": "i" } },
+            { "figures.figCaption": { "$regex": "kidney stones", "$options": "i" } },
+            { "figures.figCaption": { "$regex": "electrolyte imbalance", "$options": "i" } },
+            { "figures.figCaption": { "$regex": "edema", "$options": "i" } },
+            { "figures.figCaption": { "$regex": "pruritus", "$options": "i" } },
+            { "figures.figCaption": { "$regex": "urine", "$options": "i" } },
+            { "figures.figCaption": { "$regex": "dialysis", "$options": "i" } },
+            { "figures.figCaption": { "$regex": "anemia", "$options": "i" } },
+            { "figures.figCaption": { "$regex": "urina", "$options": "i" } },
+            { "tables.tableCaption": { "$regex": "kidney stones", "$options": "i" } },
+            { "tables.tableCaption": { "$regex": "electrolyte imbalance", "$options": "i" } },
+            { "tables.tableCaption": { "$regex": "edema", "$options": "i" } },
+            { "tables.tableCaption": { "$regex": "pruritus", "$options": "i" } },
+            { "tables.tableCaption": { "$regex": "urine", "$options": "i" } },
+            { "tables.tableCaption": { "$regex": "dialysis", "$options": "i" } },
+            { "tables.tableCaption": { "$regex": "anemia", "$options": "i" } },
+            { "tables.tableCaption": { "$regex": "urina", "$options": "i" } },
+	  ]
+        },
+        {
+          "$or": [
+            { "title": { "$regex": "covid", "$options": "i" } },
+            { "title": { "$regex": "corona", "$options": "i" } },
+            { "title": { "$regex": "SARS-CoV-2", "$options": "i" } },
+            { "abstract.text": { "$regex": "covid", "$options": "i" } },
+            { "abstract.text": { "$regex": "corona", "$options": "i" } },
+            { "abstract.text": { "$regex": "SARS-CoV-2", "$options": "i" } }
+          ]
+        }
+      ]
+    }
+  },
+  { "$unwind": "$tables" },
+  {
+    "$project":
+              {
+                  "title": 1,
+                "caption": "$tables.tableCaption",
+                "meta_h" : "$tables.HMD",
+                "meta_v": "$tables.VMD",
+                "data": "$tables.Data"
+              }
+  }
+]
+
+negatives_q3 = [
+  {
+    "$match": {
+      "$and": [
+        {
+          "tables": { "$ne": [] }
+        },
+        {
+          "$and": [
+            { "title": { "$not": { "$regex": "kidney disease", "$options": "i" } } },
+            { "title": { "$not": { "$regex": "renal disease", "$options": "i" } } },
+            { "title": { "$not": { "$regex": "CKD" } } },
+            { "abstract.text": { "$not": { "$regex": "kidney disease", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "renal disease", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "CKD" } } },
+            { "tables.tableCaption": { "$not": { "$regex": "kidney disease", "$options": "i" } } },
+            { "tables.tableCaption": { "$not": { "$regex": "renal disease", "$options": "i" } } },
+            { "tables.tableCaption": { "$not": { "$regex": "CKD" } } },
+            { "figures.figCaption": { "$not": { "$regex": "kidney disease", "$options": "i" } } },
+            { "figures.figCaption": { "$not": { "$regex": "renal disease", "$options": "i" } } },
+            { "figures.figCaption": { "$not": { "$regex": "CKD" } } },
+            { "title": { "$not": { "$regex": "kidney stones", "$options": "i" } } },
+            { "title": { "$not": { "$regex": "electrolyte imbalance", "$options": "i" } } },
+            { "title": { "$not": { "$regex": "edema", "$options": "i" } } },
+            { "title": { "$not": { "$regex": "pruritus", "$options": "i" } } },
+            { "title": { "$not": { "$regex": "urine", "$options": "i" } } },
+            { "title": { "$not": { "$regex": "dialysis", "$options": "i" } } },
+            { "title": { "$not": { "$regex": "anemia", "$options": "i" } } },
+            { "title": { "$not": { "$regex": "urina", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "kidney stones", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "electrolyte imbalance", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "edema", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "pruritus", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "urine", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "anemia", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "abdominal pain", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "abdominal discomfort", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "dialysis", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "urina", "$options": "i" } } },
+            { "figures.figCaption": { "$not": { "$regex": "kidney stones", "$options": "i" } } },
+            { "figures.figCaption": { "$not": { "$regex": "electrolyte imbalance", "$options": "i" } } },
+            { "figures.figCaption": { "$not": { "$regex": "edema", "$options": "i" } } },
+            { "figures.figCaption": { "$not": { "$regex": "pruritus", "$options": "i" } } },
+            { "figures.figCaption": { "$not": { "$regex": "urine", "$options": "i" } } },
+            { "figures.figCaption": { "$not": { "$regex": "dialysis", "$options": "i" } } },
+            { "figures.figCaption": { "$not": { "$regex": "anemia", "$options": "i" } } },
+            { "figures.figCaption": { "$not": { "$regex": "urina", "$options": "i" } } },
+            { "tables.tableCaption": { "$not": { "$regex": "kidney stones", "$options": "i" } } },
+            { "tables.tableCaption": { "$not": { "$regex": "electrolyte imbalance", "$options": "i" } } },
+            { "tables.tableCaption": { "$not": { "$regex": "edema", "$options": "i" } } },
+            { "tables.tableCaption": { "$not": { "$regex": "pruritus", "$options": "i" } } },
+            { "tables.tableCaption": { "$not": { "$regex": "urine", "$options": "i" } } },
+            { "tables.tableCaption": { "$not": { "$regex": "dialysis", "$options": "i" } } },
+            { "tables.tableCaption": { "$not": { "$regex": "anemia", "$options": "i" } } },
+            { "tables.tableCaption": { "$not": { "$regex": "urina", "$options": "i" } } }
+          ]
+        },
+        {
+          "$and": [
+            { "title": { "$not": { "$regex": "covid", "$options": "i" } } },
+            { "title": { "$not": { "$regex": "corona", "$options": "i" } } },
+            { "title": { "$not": { "$regex": "SARS-CoV-2", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "covid", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "corona", "$options": "i" } } },
+            { "abstract.text": { "$not": { "$regex": "SARS-CoV-2", "$options": "i" } } }
+          ]
+        }
+      ]
+    }
+  },
+  { "$unwind": "$tables" },
+  {
+    "$project": {
+      "title": 1,
+      "caption": "$tables.tableCaption",
+      "meta_h": "$tables.HMD",
+      "meta_v": "$tables.VMD",
+      "data": "$tables.Data"
+    }
+  },
+  { "$limit": 33000 }
+]
+
+MLP [acc: 0.39; precision: 0.45; recall: 0.39]
+CNN [acc: 0.52; precision: 0.58; recall: 0.52]
+SVM [acc: 0.79]
+log [acc: 0.72]
+MLP (without embedding) [acc: 0.38, precision: 0.45, recall: 0.38]

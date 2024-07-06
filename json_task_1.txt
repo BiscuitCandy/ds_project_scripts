@@ -1,0 +1,189 @@
+db.CKG1_3.aggregate([
+  {
+    $match: {
+      $and: [
+        { tables: { $ne: [] } },
+        {
+          $or: [
+            { title: /CKD/ },
+            { "abstract.text": /CKD/ },
+            { "table.tableCaption": /CKD/ },
+	    { "figures.figCaption": /CKD/ }
+          ]
+        },
+        { title: { $in: [/corona/i, /covid/i, /SARS-CoV-2/i] } }
+      ]
+    }
+  },
+  { $unwind: "$tables" },
+  { $replaceRoot: { newRoot: "$tables" } },
+  { $count: "cnt" }
+]);
+
+- Renal disease: 387 documents[1142 tables]
+- CKD: 634 documents[2037 tables]
+- kidney: 4546 documents[12573 tables]
+- kidney stone: 10 documents[33 tables]
+- dialysis: 1192 documents[3300 tables]
+- urine: 1070 documents[2401 tables]
+- urina[tion/lysis]: 638 documents[1709 tables]
+- anemia: 345 documents[970 tables]
+- pruritus: 50 documents[102 tables]
+- edema: 1513 documents[3328 tables]
+- abdominal pain: 569 documents[1549 tables]
+
+-----------------------------------------------------------
+-----------------------------------------------------------
+
+db.CKG1_3.aggregate([
+  {
+    $match: {
+      $and: [
+        { tables: { $ne: [] } },
+        { "tables.tableCaption": { $in: [/kidney disease/i, /renal disease/i, /CKD/] } },
+        {
+          $or: [
+            { title: { $regex: /covid/i } },
+            { title: { $regex: /corona/i } }
+          ]
+        }
+      ]
+    }
+  },
+  { $unwind: "$tables" },
+  { $replaceRoot: { newRoot: "$tables" } },
+  { $project: { tableCaption: 1 } },
+  { $count: "cnt" }
+]);
+---------- 1017 (272)------------
+[tp: 28; fp: 2; precision: 93.]
+-----------------------------------------------------------
+
+db.CKG1_3.aggregate([
+  {
+    $match: {
+      $and: [
+        {
+          $or: [
+            { title: { $in: [/kidney/i, /renal disease/i, /CKD/] } },
+            { "abstract.text": { $in: [/kidney/i, /renal disease/i, /CKD/] } },
+            { "tables.tableCaption": { $in: [/kidney/i, /renal disease/i, /CKD/] } },
+            { "figures.figCaption": { $in: [/kidney/i, /renal/i, /CKD/] } }
+          ]
+        },
+        { tables: { $ne: [] } },
+        {
+          $or: [
+            { title: { $regex: /covid/i } },
+            { title: { $regex: /corona/i } },
+            { title: { $regex: /SARS-CoV-2/i } },
+            { "abstract.text": { $regex: /covid/i } },
+            { "abstract.text": { $regex: /corona/i } },
+            { "abstract.text": { $regex: /SARS-CoV-2/i } }
+          ]
+        }
+      ]
+    }
+  },
+  { $unwind: "$tables" },
+  { $replaceRoot: { newRoot: "$tables" } },
+  { $project: { tableCaption: 1 } },
+  { $count: "cnt" }
+]);
+ --------------- 17941 (6428) --------------------
+
+[tp: 36; fp: 4; precision: 90 (40)]
+-----------------------------------------------------------
+db.CKG1_3.aggregate([
+  {
+    $match: {
+      $and: [
+        { tables: { $ne: [] } },
+        {
+          $or: [
+            { title: { $in: [/kidney/i, /renal/i, /CKD/] } },
+            { "abstract.text": { $in: [/kidney/i, /renal/i, /CKD/] } },
+            { "tables.tableCaption": { $in: [/kidney/i, /renal/i, /CKD/] } },
+            { "figures.figCaption": { $in: [/kidney/i, /renal/i, /CKD/] } },
+            { title: { $in: [/kidney stones/i, /electrolyte imbalance/i, /edema/i, /pruritus/i, /urine/i, /dialysis/i, /anemia/i, /urina/i] } },
+            { "abstract.text": { $in: [/kidney stones/i, /electrolyte imbalance/i, /edema/i, /pruritus/i, /urine/i, /anemia/i, /abdominal pain/i, /abdominal discomfort/i, /dialysis/i, /urina/i] } },
+            { "figures.figCaption": { $in: [/kidney stones/i, /electrolyte imbalance/i, /edema/i, /pruritus/i, /urine/i, /dialysis/i, /anemia/i, /urina/i] } },
+            { "tables.tableCaption": { $in: [/kidney stones/i, /electrolyte imbalance/i, /edema/i, /pruritus/i, /urine/i, /dialysis/i, /anemia/i, /urina/i] } }
+          ]
+        },
+        {
+          $or: [
+            { title: { $regex: /covid/i } },
+            { title: { $regex: /corona/i } },
+            { title: { $regex: /SARS-CoV-2/i } },
+            { "abstract.text": { $regex: /covid/i } },
+            { "abstract.text": { $regex: /corona/i } },
+            { "abstract.text": { $regex: /SARS-CoV-2/i } }
+          ]
+        }
+      ]
+    }
+  },
+  { $unwind: "$tables" },
+  { $replaceRoot: { newRoot: "$tables" } },
+  { $project: { tableCaption: 1 } },
+  { $count: "cnt" }
+]);
+ ----------------------------33296 (12353)---------------------------
+[tp: 35; fp: 5; precision: 87.5]
+
+___________________________________________________________
+-----------------------------------------------------------
+***********************************************************
+////////////////////////////////////////////////////////
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+***********************************************************
+-----------------------------------------------------------
+___________________________________________________________
+
+db.CKG1_3.aggregate([
+  {
+    $match: {
+      $and: [
+        { tables: { $ne: [] } },
+        {
+          $or: [
+            { title: { $in: [/kidney/i, /renal/i, /CKD/] } },
+            { "abstract.text": { $in: [/kidney/i, /renal/i, /CKD/] } },
+            { "tables.tableCaption": { $in: [/kidney/i, /renal/i, /CKD/] } },
+            { "figures.figCaption": { $in: [/kidney/i, /renal/i, /CKD/] } },
+	    { "bodyTextFlat.text" : { $in: [/kidney/i, /renal/i, /CKD/] } },
+            { title: { $in: [/kidney stones/i, /electrolyte imbalance/i, /edema/i, /pruritus/i, /urine/i, /dialysis/i, /anemia/i, /urina/i] } },
+            { "abstract.text": { $in: [/kidney stones/i, /electrolyte imbalance/i, /edema/i, /pruritus/i, /urine/i, /anemia/i, /abdominal pain/i, /abdominal discomfort/i, /dialysis/i, /urina/i] } },
+            { "figures.figCaption": { $in: [/kidney stones/i, /electrolyte imbalance/i, /edema/i, /pruritus/i, /urine/i, /dialysis/i, /anemia/i, /urina/i] } },
+            { "tables.tableCaption": { $in: [/kidney stones/i, /electrolyte imbalance/i, /edema/i, /pruritus/i, /urine/i, /dialysis/i, /anemia/i, /urina/i] } },
+	    { "bodyTextFlat.text": { $in: [/kidney stones/i, /electrolyte imbalance/i, /edema/i, /pruritus/i, /urine/i, /anemia/i, /abdominal pain/i, /abdominal discomfort/i, /dialysis/i, /urina/i] }}
+          ]
+        },
+        {
+          $or: [
+            { title: { $regex: /covid/i } },
+            { title: { $regex: /corona/i } },
+            { title: { $regex: /SARS-CoV-2/i } },
+            { "abstract.text": { $regex: /covid/i } },
+            { "abstract.text": { $regex: /corona/i } },
+            { "abstract.text": { $regex: /SARS-CoV-2/i } }
+          ]
+        }
+      ]
+    }
+  },
+  { $unwind: "$tables" },
+  { $replaceRoot: { newRoot: "$tables" } },
+  { $project: { tableCaption: 1 } },
+  { $count: "cnt" }
+]);
+
+___________________________________________________________
+-----------------------------------------------------------
+***********************************************************
+////////////////////////////////////////////////////////
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+***********************************************************
+-----------------------------------------------------------
+___________________________________________________________
